@@ -1,0 +1,2 @@
+dalmatian aws exec -i caselaw-stg s3 cp files s3://tna-caselaw-assets-staging --recursive --acl public-read --metadata pdfsource=custom-pdfs
+dalmatian aws exec -i caselaw-stg s3 cp files s3://tna-caselaw-unpublished-assets-staging --recursive --metadata pdfsource=custom-pdfs
