@@ -30,3 +30,22 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PDF_UPLOADER_PRODUCTION }}
         AWS_REGION: 'eu-west-2'   # optional: defaults to us-east-1
         SOURCE_DIR: 'files'      # optional: defaults to entire repository
+    - name: configure AWS credentials for cloudfront invalidation
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PDF_UPLOADER_PRODUCTION}}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PDF_UPLOADER_PRODUCTION }}
+        aws-region: 'eu-west-2'
+    - uses: badsyntax/github-action-aws-cloudfront@master
+      name: Invalidate assets.caselaw.nationalarchives.gov.uk
+      id: invalidate-cloudfront-cache
+      with:
+        distribution-id: ${{ secrets.AWS_ASSETS_DISTRIBUTION_ID }}
+        aws-region: 'eu-west-2'
+        # origin-prefix: ''
+        include-origin-prefix: false
+        invalidate-paths: '/*'
+        # default-root-object: 'index.html'
+
+      # added cache-invalidator to staging/prod github-action-custom-pdf user
+      # added ASSETS_DISTRIBUTION_ID to github secrets for repo
