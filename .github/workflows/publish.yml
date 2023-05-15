@@ -42,10 +42,7 @@ jobs:
       with:
         distribution-id: ${{ secrets.AWS_ASSETS_DISTRIBUTION_ID }}
         aws-region: 'eu-west-2'
-        # origin-prefix: ''
+        origin-prefix: ''
         include-origin-prefix: false
         invalidate-paths: '/*'
-        # default-root-object: 'index.html'
-
-      # added cache-invalidator to staging/prod github-action-custom-pdf user
-      # added ASSETS_DISTRIBUTION_ID to github secrets for repo
+        default-root-object: 'index.html'
