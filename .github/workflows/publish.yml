@@ -21,16 +21,16 @@ jobs:
     - name: upload to unpublished bucket
       run: >
         aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_UNPUBLISHED_PRODUCTION }}/
-          --no-progress
-          --metadata pdfsource=custom-pdfs
-          --size-only
+        --no-progress
+        --metadata pdfsource=custom-pdfs
+        --size-only
     - name: upload to published bucket
       run: >
         aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_PUBLISHED_PRODUCTION }}/
-          --no-progress
-          --acl public-read
-          --metadata pdfsource=custom-pdfs
-          --size-only
+        --no-progress
+        --acl public-read
+        --metadata pdfsource=custom-pdfs
+        --size-only
     - uses: badsyntax/github-action-aws-cloudfront@master
       name: Invalidate assets.caselaw.nationalarchives.gov.uk
       id: invalidate-cloudfront-cache
