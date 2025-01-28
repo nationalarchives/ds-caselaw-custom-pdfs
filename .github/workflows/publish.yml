@@ -15,9 +15,9 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_OIDC_PRODUCTION_ROLE_ARN }}
-          aws-region: eu-west-2
+      with:
+        role-to-assume: ${{ secrets.AWS_OIDC_PRODUCTION_ROLE_ARN }}
+        aws-region: eu-west-2
     - name: upload to unpublished bucket
       run: >
         aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_UNPUBLISHED_PRODUCTION }}/
