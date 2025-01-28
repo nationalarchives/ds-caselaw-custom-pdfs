@@ -1,5 +1,9 @@
 name: Upload Website
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     branches:
@@ -10,32 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_PRODUCTION_ROLE_ARN }}
+          aws-region: eu-west-2
     - name: upload to unpublished bucket
-      uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --metadata pdfsource=custom-pdfs --size-only
-      env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_UNPUBLISHED_PRODUCTION }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PDF_UPLOADER_PRODUCTION }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PDF_UPLOADER_PRODUCTION }}
-        AWS_REGION: 'eu-west-2'   # optional: defaults to us-east-1
-        SOURCE_DIR: 'files'      # optional: defaults to entire repository
+      run: >
+        aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_UNPUBLISHED_PRODUCTION }}/
+          --no-progress
+          --metadata pdfsource=custom-pdfs
+          --size-only
     - name: upload to published bucket
-      uses: jakejarvis/s3-sync-action@master
-      with:
-        args: --acl public-read --metadata pdfsource=custom-pdfs --size-only
-      env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET_PUBLISHED_PRODUCTION }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_PDF_UPLOADER_PRODUCTION }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PDF_UPLOADER_PRODUCTION }}
-        AWS_REGION: 'eu-west-2'   # optional: defaults to us-east-1
-        SOURCE_DIR: 'files'      # optional: defaults to entire repository
-    - name: configure AWS credentials for cloudfront invalidation
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_PDF_UPLOADER_PRODUCTION}}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_PDF_UPLOADER_PRODUCTION }}
-        aws-region: 'eu-west-2'
+      run: >
+        aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_PUBLISHED_PRODUCTION }}/
+          --no-progress
+          --acl public-read
+          --metadata pdfsource=custom-pdfs
+          --size-only
     - uses: badsyntax/github-action-aws-cloudfront@master
       name: Invalidate assets.caselaw.nationalarchives.gov.uk
       id: invalidate-cloudfront-cache
