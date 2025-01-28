@@ -7,36 +7,36 @@ permissions:
 on:
   push:
     branches:
-    - main
+      - main
 
 jobs:
   upload:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: ${{ secrets.AWS_OIDC_PRODUCTION_ROLE_ARN }}
-        aws-region: eu-west-2
-    - name: upload to unpublished bucket
-      run: >
-        aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_UNPUBLISHED_PRODUCTION }}/
-        --no-progress
-        --metadata pdfsource=custom-pdfs
-        --size-only
-    - name: upload to published bucket
-      run: >
-        aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_PUBLISHED_PRODUCTION }}/
-        --no-progress
-        --metadata pdfsource=custom-pdfs
-        --size-only
-    - uses: badsyntax/github-action-aws-cloudfront@master
-      name: Invalidate assets.caselaw.nationalarchives.gov.uk
-      id: invalidate-cloudfront-cache
-      with:
-        distribution-id: ${{ secrets.AWS_ASSETS_DISTRIBUTION_ID }}
-        aws-region: 'eu-west-2'
-        origin-prefix: ''
-        include-origin-prefix: false
-        invalidate-paths: '/*'
-        default-root-object: 'index.html'
+      - uses: actions/checkout@master
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_PRODUCTION_ROLE_ARN }}
+          aws-region: eu-west-2
+      - name: upload to unpublished bucket
+        run: >
+          aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_UNPUBLISHED_PRODUCTION }}/
+          --no-progress
+          --metadata pdfsource=custom-pdfs
+          --size-only
+      - name: upload to published bucket
+        run: >
+          aws s3 sync files s3://${{ secrets.AWS_S3_BUCKET_PUBLISHED_PRODUCTION }}/
+          --no-progress
+          --metadata pdfsource=custom-pdfs
+          --size-only
+      - uses: badsyntax/github-action-aws-cloudfront@master
+        name: Invalidate assets.caselaw.nationalarchives.gov.uk
+        id: invalidate-cloudfront-cache
+        with:
+          distribution-id: ${{ secrets.AWS_ASSETS_DISTRIBUTION_ID }}
+          aws-region: "eu-west-2"
+          origin-prefix: ""
+          include-origin-prefix: false
+          invalidate-paths: "/*"
+          default-root-object: "index.html"
